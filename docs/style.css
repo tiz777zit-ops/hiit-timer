@@ -1,0 +1,201 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --text: #000000;
+  --secondary-text: #6e6e73;
+  --separator: #d1d1d6;
+  --accent: #007aff;
+  --button-bg: #e5e5ea;
+  --destructive: #ff3b30;
+  --work: #ff9500;
+  --rest: #34c759;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --text: #ffffff;
+    --secondary-text: #98989f;
+    --separator: #38383a;
+    --accent: #0a84ff;
+    --button-bg: #2c2c2e;
+    --destructive: #ff453a;
+    --work: #ff9f0a;
+    --rest: #30d158;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+main {
+  max-width: 480px;
+  height: 100%;
+  margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 24px;
+}
+
+.screen[hidden] {
+  display: none;
+}
+
+.center {
+  align-items: center;
+  text-align: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+h1 {
+  margin: 24px 0 0;
+  font-size: 34px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 0 16px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  font-size: 17px;
+}
+
+.field + .field {
+  border-top: 1px solid var(--separator);
+}
+
+.field .label {
+  flex: 1;
+}
+
+.field .value {
+  color: var(--secondary-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.stepper {
+  display: flex;
+  gap: 1px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.stepper button {
+  width: 48px;
+  height: 36px;
+  border: none;
+  background: var(--button-bg);
+  color: var(--text);
+  font-size: 20px;
+}
+
+.stepper button:disabled {
+  color: var(--secondary-text);
+  opacity: 0.4;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.primary,
+.secondary {
+  min-width: 140px;
+  height: 52px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.primary {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.secondary {
+  background: var(--button-bg);
+  color: var(--accent);
+}
+
+.destructive {
+  color: var(--destructive);
+}
+
+.wide {
+  width: 100%;
+}
+
+.phase {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.phase[data-phase="work"] {
+  color: var(--work);
+}
+
+.phase[data-phase="rest"] {
+  color: var(--rest);
+}
+
+.remaining {
+  margin: 0;
+  font-size: min(96px, 24vw);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.round {
+  margin: 0;
+  font-size: 22px;
+  color: var(--secondary-text);
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+}
+
+.finished {
+  margin: 0;
+  font-size: 64px;
+  font-weight: 700;
+}

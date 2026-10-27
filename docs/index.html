@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HIITタイマー</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="HIITタイマー">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <main>
+    <section id="setup" class="screen" hidden>
+      <h1>HIIT タイマー</h1>
+      <div class="card">
+        <div class="field" data-field="workSeconds">
+          <span class="label">ワーク</span>
+          <span class="value"><output></output> 秒</span>
+          <span class="stepper">
+            <button type="button" data-step="-1" aria-label="ワークを減らす">−</button>
+            <button type="button" data-step="1" aria-label="ワークを増やす">＋</button>
+          </span>
+        </div>
+        <div class="field" data-field="restSeconds">
+          <span class="label">休憩</span>
+          <span class="value"><output></output> 秒</span>
+          <span class="stepper">
+            <button type="button" data-step="-1" aria-label="休憩を減らす">−</button>
+            <button type="button" data-step="1" aria-label="休憩を増やす">＋</button>
+          </span>
+        </div>
+        <div class="field" data-field="rounds">
+          <span class="label">ラウンド</span>
+          <span class="value"><output></output> 回</span>
+          <span class="stepper">
+            <button type="button" data-step="-1" aria-label="ラウンドを減らす">−</button>
+            <button type="button" data-step="1" aria-label="ラウンドを増やす">＋</button>
+          </span>
+        </div>
+      </div>
+      <button type="button" id="start" class="primary wide">スタート</button>
+    </section>
+
+    <section id="run" class="screen center" hidden>
+      <div class="spacer"></div>
+      <p id="phase" class="phase"></p>
+      <p id="remaining" class="remaining"></p>
+      <p id="round" class="round"></p>
+      <div class="spacer"></div>
+      <div class="controls">
+        <button type="button" id="reset" class="secondary destructive">リセット</button>
+        <button type="button" id="pause" class="primary">一時停止</button>
+        <button type="button" id="resume" class="primary" hidden>再開</button>
+      </div>
+    </section>
+
+    <section id="finished" class="screen center" hidden>
+      <div class="spacer"></div>
+      <p class="finished">完了</p>
+      <div class="spacer"></div>
+      <button type="button" id="done" class="primary">設定に戻る</button>
+    </section>
+  </main>
+</body>
+</html>
