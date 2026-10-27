@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 自分専用の HIIT タイマーの Web アプリ（素の HTML / CSS / JavaScript、ES Modules、外部依存・ビルド工程なし）。iPhone の Safari でホーム画面に追加して使う。仕様は `spec.md` にまとめてあり、実装はこれに従う。仕様を変更するときは、先に `spec.md` を更新してユーザーの合意を得る。
 
-以前は SwiftUI の iOS アプリだった。無料の Apple ID では 7 日で起動できなくなるため、Web アプリに切り替えた。iOS 版はコミット `6357654` に残っている。
+以前は SwiftUI の iOS アプリだった。無料の Apple ID では 7 日で起動できなくなるため、Web アプリに切り替えた。iOS 版はコミット `0d5fb53` に残っている。
 
 ## 開発ルール
 
