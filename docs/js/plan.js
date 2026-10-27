@@ -4,16 +4,19 @@
 import { normalizeSettings } from './settings.js';
 
 export const COUNTDOWN_SECONDS = 3;
+/** スタート直後、最初のワークの前に置く準備時間（spec.md 3.1）。固定で、設定項目にはしない。 */
+export const PREPARE_SECONDS = 5;
 
 /**
- * @typedef {'work' | 'rest'} Phase
+ * @typedef {'prepare' | 'work' | 'rest'} Phase
  * @typedef {'workStart' | 'restStart' | 'count' | 'finish'} Cue
  */
 
 export function createPlan(settings) {
   const { workSeconds, restSeconds, rounds } = normalizeSettings(settings);
-  const segments = [];
-  let time = 0;
+  // 準備時間はスタート直後の 1 回だけ。ラウンド表示は 1 にする（spec.md 3.7）
+  const segments = [{ phase: 'prepare', round: 1, start: 0, end: PREPARE_SECONDS }];
+  let time = PREPARE_SECONDS;
   for (let round = 1; round <= rounds; round++) {
     segments.push({ phase: 'work', round, start: time, end: time + workSeconds });
     time += workSeconds;
@@ -26,7 +29,7 @@ export function createPlan(settings) {
   return { rounds, segments, totalDuration: time, cueTimeline: makeCueTimeline(segments) };
 }
 
-/** 開始直後（0 秒）のワーク開始音は含まない。WorkoutTimer.start が鳴らす。 */
+/** 開始直後（0 秒）の合図は含まない。WorkoutTimer.start が鳴らす。準備時間の終わりにはワーク開始音を鳴らす。 */
 function makeCueTimeline(segments) {
   const timeline = [];
   for (const segment of segments) {

@@ -9,6 +9,8 @@ import {
 import { WorkoutTimer } from './timer.js';
 import { ScreenWakeLock } from './wake-lock.js';
 
+const PHASE_LABELS = { prepare: '準備', work: 'ワーク', rest: '休憩' };
+
 const FIELDS = {
   workSeconds: { min: SECONDS_MIN, max: SECONDS_MAX, step: SECONDS_STEP },
   restSeconds: { min: SECONDS_MIN, max: SECONDS_MAX, step: SECONDS_STEP },
@@ -56,7 +58,7 @@ function renderRun() {
   const position = timer.position;
   if (!position) return;
   const phase = $('#phase');
-  phase.textContent = position.phase === 'work' ? 'ワーク' : '休憩';
+  phase.textContent = PHASE_LABELS[position.phase];
   phase.dataset.phase = position.phase;
   $('#remaining').textContent = formatRemaining(position.remaining);
   $('#round').textContent = `ラウンド ${position.round} / ${timer.plan.rounds}`;

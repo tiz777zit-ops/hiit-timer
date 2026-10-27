@@ -62,7 +62,8 @@ export class WorkoutTimer {
     this.#resumedAt = this.#clock();
     this.status = 'running';
     this.#cuePlayer.begin();
-    this.#cuePlayer.play('workStart');
+    // 準備時間の開始時は休憩開始音と同じ音にする（spec.md 3.3）
+    this.#cuePlayer.play('restStart');
     this.#startTicking();
     this.#onChange();
   }

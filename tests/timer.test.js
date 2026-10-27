@@ -30,15 +30,24 @@ describe('WorkoutTimer', () => {
     }
   }
 
-  test('スタートでワーク開始音を鳴らす', () => {
+  test('スタートで準備時間に入り、休憩開始音を鳴らす', () => {
     timer.start(DEFAULT_SETTINGS);
     assert.equal(timer.status, 'running');
-    assert.deepEqual(player.events, ['begin', 'play:workStart']);
+    assert.deepEqual(player.events, ['begin', 'play:restStart']);
+    assert.deepEqual(timer.position, { phase: 'prepare', round: 1, remaining: 5 });
+  });
+
+  test('準備時間のカウントのあとワーク開始音を鳴らす', () => {
+    timer.start(DEFAULT_SETTINGS);
+    player.events = [];
+    advance(5);
+    assert.deepEqual(player.events, ['play:count', 'play:count', 'play:count', 'play:workStart']);
     assert.deepEqual(timer.position, { phase: 'work', round: 1, remaining: 20 });
   });
 
   test('カウントのあと休憩開始音を鳴らす', () => {
     timer.start(DEFAULT_SETTINGS);
+    advance(5);
     player.events = [];
     advance(20);
     assert.deepEqual(player.events, ['play:count', 'play:count', 'play:count', 'play:restStart']);
@@ -46,27 +55,39 @@ describe('WorkoutTimer', () => {
     assert.equal(timer.position.round, 1);
   });
 
-  test('一時停止中は時間が止まり、再開すると続きから進む', () => {
+  test('一時停止中は時間が止まり、再開すると準備時間を挟まずに続きから進む', () => {
     timer.start(DEFAULT_SETTINGS);
-    advance(5);
+    advance(10);
     timer.pause();
     assert.equal(timer.status, 'paused');
     assert.equal(player.events.at(-1), 'stop');
 
     now += 60;
     timer.tick();
-    assert.equal(timer.elapsed, 5);
+    assert.equal(timer.elapsed, 10);
 
     timer.resume();
     assert.equal(timer.status, 'running');
     assert.equal(player.events.at(-1), 'begin');
     advance(1);
-    assert.equal(timer.elapsed, 6);
+    assert.equal(timer.elapsed, 11);
+    assert.deepEqual(timer.position, { phase: 'work', round: 1, remaining: 14 });
+  });
+
+  test('準備時間中も一時停止・再開できる', () => {
+    timer.start(DEFAULT_SETTINGS);
+    advance(2);
+    timer.pause();
+    assert.equal(timer.status, 'paused');
+    assert.deepEqual(timer.position, { phase: 'prepare', round: 1, remaining: 3 });
+    timer.resume();
+    advance(3);
+    assert.deepEqual(timer.position, { phase: 'work', round: 1, remaining: 20 });
   });
 
   test('tick が間引かれても、戻ったときの残り時間は正しい', () => {
     timer.start(DEFAULT_SETTINGS);
-    now += 25;
+    now += 30;
     timer.tick();
     assert.deepEqual(timer.position, { phase: 'rest', round: 1, remaining: 5 });
   });
@@ -74,14 +95,14 @@ describe('WorkoutTimer', () => {
   test('長く空いたあとは古い合図を鳴らさない', () => {
     timer.start(DEFAULT_SETTINGS);
     player.events = [];
-    now += 25;
+    now += 30;
     timer.tick();
     assert.deepEqual(player.events, []);
   });
 
   test('tick の間隔が 1 秒以上空いても、遅れの小さい完了音は鳴らす', () => {
     timer.start({ workSeconds: 5, restSeconds: 5, rounds: 1 });
-    now += 3.9;
+    now += 8.9;
     timer.tick();
     player.events = [];
     now += 1.2;
@@ -92,7 +113,7 @@ describe('WorkoutTimer', () => {
 
   test('古い完了音は、終了時刻で丸めずに実際の遅れで判定して捨てる', () => {
     timer.start({ workSeconds: 5, restSeconds: 5, rounds: 1 });
-    now += 4.5;
+    now += 9.5;
     timer.tick();
     player.events = [];
     now += 60.5;
@@ -103,7 +124,7 @@ describe('WorkoutTimer', () => {
 
   test('端末の時刻が戻されても経過時間は減らず、合図をくり返さない', () => {
     timer.start(DEFAULT_SETTINGS);
-    advance(18);
+    advance(23);
     const elapsed = timer.elapsed;
     player.events = [];
     now -= 10;
@@ -116,10 +137,11 @@ describe('WorkoutTimer', () => {
   test('最後まで進むと、カウントのあと完了音を鳴らして終わる', () => {
     timer.start({ workSeconds: 5, restSeconds: 5, rounds: 2 });
     player.events = [];
-    advance(15);
+    advance(20);
     assert.equal(timer.status, 'finished');
     assert.equal(timer.position, null);
     assert.deepEqual(player.events, [
+      'play:count', 'play:count', 'play:count', 'play:workStart',
       'play:count', 'play:count', 'play:count', 'play:restStart',
       'play:count', 'play:count', 'play:count', 'play:workStart',
       'play:count', 'play:count', 'play:count', 'play:finish',
@@ -137,7 +159,7 @@ describe('WorkoutTimer', () => {
 
   test('完了時も完了後のリセットでも stop を呼ばない（完了音を途中で止めない）', () => {
     timer.start({ workSeconds: 5, restSeconds: 5, rounds: 1 });
-    advance(5);
+    advance(10);
     timer.reset();
     assert.ok(!player.events.includes('stop'));
   });

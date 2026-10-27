@@ -8,6 +8,7 @@
   --accent: #007aff;
   --button-bg: #e5e5ea;
   --destructive: #ff3b30;
+  --prepare: #5856d6;
   --work: #ff9500;
   --rest: #34c759;
 }
@@ -22,6 +23,7 @@
     --accent: #0a84ff;
     --button-bg: #2c2c2e;
     --destructive: #ff453a;
+    --prepare: #5e5ce6;
     --work: #ff9f0a;
     --rest: #30d158;
   }
@@ -166,6 +168,10 @@ button {
   margin: 0;
   font-size: 34px;
   font-weight: 700;
+}
+
+.phase[data-phase="prepare"] {
+  color: var(--prepare);
 }
 
 .phase[data-phase="work"] {
