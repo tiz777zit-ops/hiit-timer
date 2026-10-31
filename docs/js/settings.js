@@ -1,6 +1,8 @@
-// ワーク時間・休憩時間・ラウンド数の設定（spec.md 3.2）と、その保存（3.6）
+// ワーク時間・休憩時間・ラウンド数・マナーモードでも鳴らすかの設定（spec.md 3.2）と、その保存（3.6）
 
-export const DEFAULT_SETTINGS = Object.freeze({ workSeconds: 20, restSeconds: 10, rounds: 8 });
+export const DEFAULT_SETTINGS = Object.freeze({
+  workSeconds: 20, restSeconds: 10, rounds: 8, ringInSilentMode: true,
+});
 
 export const SECONDS_MIN = 5;
 export const SECONDS_MAX = 300;
@@ -17,7 +19,7 @@ function normalizeSeconds(value, fallback) {
   return clamp(Math.round(value / SECONDS_STEP) * SECONDS_STEP, SECONDS_MIN, SECONDS_MAX);
 }
 
-/** 範囲外の値・刻みに合わない値・数値でない値を、設定可能な値に直す。 */
+/** 範囲外の値・刻みに合わない値・数値でない値（スイッチは真偽値でない値）を、設定可能な値に直す。 */
 export function normalizeSettings(settings) {
   const rounds = Number.isFinite(settings?.rounds)
     ? clamp(Math.round(settings.rounds), ROUNDS_MIN, ROUNDS_MAX)
@@ -26,6 +28,9 @@ export function normalizeSettings(settings) {
     workSeconds: normalizeSeconds(settings?.workSeconds, DEFAULT_SETTINGS.workSeconds),
     restSeconds: normalizeSeconds(settings?.restSeconds, DEFAULT_SETTINGS.restSeconds),
     rounds,
+    ringInSilentMode: typeof settings?.ringInSilentMode === 'boolean'
+      ? settings.ringInSilentMode
+      : DEFAULT_SETTINGS.ringInSilentMode,
   };
 }
 

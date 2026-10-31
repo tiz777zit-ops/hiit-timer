@@ -32,7 +32,8 @@ function getStorage() {
 const storage = getStorage();
 let settings = loadSettings(storage);
 const wakeLock = new ScreenWakeLock();
-const timer = new WorkoutTimer({ cuePlayer: new AudioCuePlayer(), onChange: render });
+const cuePlayer = new AudioCuePlayer();
+const timer = new WorkoutTimer({ cuePlayer, onChange: render });
 
 function render() {
   const screen = timer.status === 'idle' ? 'setup' : timer.status === 'finished' ? 'finished' : 'run';
@@ -52,6 +53,7 @@ function renderSetup() {
     field.querySelector('[data-step="-1"]').disabled = settings[key] <= min;
     field.querySelector('[data-step="1"]').disabled = settings[key] >= max;
   }
+  $('#ring-in-silent-mode').checked = settings.ringInSilentMode;
 }
 
 function renderRun() {
@@ -77,8 +79,14 @@ for (const [key, { min, max, step }] of Object.entries(FIELDS)) {
   }
 }
 
+$('#ring-in-silent-mode').addEventListener('change', (event) => {
+  settings = { ...settings, ringInSilentMode: event.target.checked };
+});
+
 $('#start').addEventListener('click', () => {
   saveSettings(storage, settings);
+  // begin() より前に設定する。再開時も同じ設定のまま使う
+  cuePlayer.ringInSilentMode = settings.ringInSilentMode;
   timer.start(settings);
 });
 $('#pause').addEventListener('click', () => timer.pause());

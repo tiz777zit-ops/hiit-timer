@@ -18,6 +18,7 @@ export class AudioCuePlayer {
   #createContext;
   #isVisible;
   #now;
+  #getAudioSession;
   #context = null;
   /** stop() のたびに増やし、再開待ちの合図を無効にする */
   #generation = 0;
@@ -27,25 +28,32 @@ export class AudioCuePlayer {
    * @param {() => AudioContext} [options.createContext]
    * @param {() => boolean} [options.isVisible]
    * @param {() => number} [options.now] ミリ秒を返す時計
+   * @param {() => ({ type: string } | undefined)} [options.getAudioSession] Audio Session API（未対応なら undefined）
    */
   constructor({
     createContext = () => new AudioContext(),
     isVisible = () => globalThis.document?.visibilityState === 'visible',
     now = () => performance.now(),
+    getAudioSession = () => globalThis.navigator?.audioSession,
   } = {}) {
     this.#createContext = createContext;
     this.#isVisible = isVisible;
     this.#now = now;
+    this.#getAudioSession = getAudioSession;
   }
+
+  /** マナーモード中でも鳴らすか（spec.md 3.3）。次の begin() から反映する。 */
+  ringInSilentMode = true;
 
   /**
    * スタート・再開ボタンの操作の中で呼ぶ。
    * iOS ではユーザーの操作の中でないと、音声を有効にできないため。
    */
   begin() {
-    // 再生中の曲を止めずに重ねて鳴らす（対応ブラウザのみ。マナーモード中は鳴らない）
-    const audioSession = globalThis.navigator?.audioSession;
-    if (audioSession) audioSession.type = 'ambient';
+    // 対応ブラウザのみ。playback はマナーモード中でも鳴るが、再生中の曲は止まる。
+    // ambient は曲に重ねて鳴るが、マナーモード中は鳴らない
+    const audioSession = this.#getAudioSession();
+    if (audioSession) audioSession.type = this.ringInSilentMode ? 'playback' : 'ambient';
     this.#context ??= this.#createContext();
     if (this.#context.state !== 'running') this.#context.resume().catch(() => {});
   }

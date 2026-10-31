@@ -50,6 +50,23 @@ describe('AudioCuePlayer', () => {
     player = new AudioCuePlayer({ createContext: () => context, isVisible: () => visible, now: () => now });
   });
 
+  test('Audio Session は、マナーモードでも鳴らすなら playback、そうでなければ ambient にする', () => {
+    const audioSession = { type: 'auto' };
+    player = new AudioCuePlayer({ createContext: () => context, getAudioSession: () => audioSession });
+    player.begin();
+    assert.equal(audioSession.type, 'playback');
+    player.ringInSilentMode = false;
+    player.begin();
+    assert.equal(audioSession.type, 'ambient');
+  });
+
+  test('Audio Session API がなくても鳴らせる', () => {
+    player = new AudioCuePlayer({ createContext: () => context, isVisible: () => true, getAudioSession: () => undefined });
+    player.begin();
+    player.play('count');
+    assert.deepEqual(context.scheduled, [660]);
+  });
+
   test('合図ごとに違う音を鳴らす', () => {
     player.begin();
     player.play('workStart');
